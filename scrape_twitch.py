@@ -1,3 +1,6 @@
+# NOT WORKING
+# decided it would take too long to find a way around cloudflare's bot protection, so I manually copied the tables into Excel and cleaned them there instead. The cleaned CSVs are in data/raw, and the cleaning code is left here for reference in case I want to revisit it later.
+
 # scrape_twitch.py
 # by Maximus Fernandez
 
