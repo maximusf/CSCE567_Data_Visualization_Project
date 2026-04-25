@@ -13,7 +13,7 @@
 # JavaScript template render the table, then we read raw values directly
 # from the DOM.
 
-from playwright_stealth import stealth_sync
+from playwright_stealth import stealth_sync # need to implement later if we revisit this
 
 from playwright.sync_api import sync_playwright
 import pandas as pd
