@@ -1,3 +1,5 @@
 .env
 claude.md
 agents.md
+.pw_profile/
+settings.json
