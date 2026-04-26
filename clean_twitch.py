@@ -1,10 +1,10 @@
 # clean_twitch.py
 # by Maximus Fernandez
-
+#
 # Cleans the four manually-collected TwitchTracker CSVs. Manual copy-paste
 # from the website into Excel introduced several formatting inconsistencies
 # that pandas cannot handle in a single read_csv call:
-
+#
 #   1. Duplicate column headers ("Gain" and "% Gain" each appear twice,
 #      once for the viewer columns and once for the stream columns).
 #   2. The % Gain columns are inconsistent within a single file: some rows
@@ -16,7 +16,7 @@
 #      ("2,625" instead of 2625).
 #   5. Missing values are represented as the string "-".
 #   6. Month is formatted as "Mar 2026" rather than an ISO date.
-
+#
 # This script normalizes all four files into clean numeric CSVs ready for
 # merging with the SteamDB and Google Trends data later in the pipeline.
 
@@ -184,16 +184,16 @@ def clean_one(game: str) -> pd.DataFrame:
     # Cast numeric columns to nullable integer / float types so missing
     # values stay as NaN rather than being coerced into 0 or strings.
     # We use Int64 (capital I, the nullable integer type) for all the
-    # genuine count columns. Hours Watched stays as a regular float because
-    # the K/M expansion can produce small fractional values when the source
-    # is something like "28.5K" (28500.0 is fine, but the unit is not a
-    # discrete count anyway, so float is the natural type).
+    # count columns. Hours Watched goes through the same treatment even
+    # though parse_suffixed_number returns floats, because the K/M
+    # expansion always yields whole-number-equivalent values (e.g.
+    # "1.51M" -> 1510000.0) that round cleanly to integers and match
+    # the integer treatment given to the other counts.
     int_cols = ["avg_viewers", "peak_viewers", "avg_streams",
-                "peak_streams", "viewers_gain", "streams_gain"]
+                "peak_streams", "viewers_gain", "streams_gain",
+                "hours_watched"]
     for col in int_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce").round().astype("Int64")
-
-    df["hours_watched"] = pd.to_numeric(df["hours_watched"], errors="coerce")
 
     for col in ("viewers_pct_gain", "streams_pct_gain"):
         # Round to two decimal places. The raw values can come out with
