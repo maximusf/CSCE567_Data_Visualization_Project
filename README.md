@@ -2,7 +2,7 @@
 
 Final project for CSCE 567 (Data Visualization). Argues that Twitch viewership spikes causally preceded Steam player count surges across four case-study games: Among Us, Fall Guys, Vampire Survivors, and Lethal Company.
 
-**Live site:** _(Vercel link goes here once deployed)_
+**Live site:** https://streamer-effect-dv.vercel.app/
 
 ## Data sources
 
