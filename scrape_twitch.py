@@ -43,11 +43,10 @@ COLUMNS = [
 
 
 def scrape_game(page, game_id: str) -> pd.DataFrame:
-    """
-    Loads one game's TwitchTracker page and returns a DataFrame of its
-    monthly statistics table. Assumes Cloudflare has already been cleared
-    on this browser context (see main()).
-    """
+    # Loads one game's TwitchTracker page and returns a DataFrame of its
+    # monthly statistics table. Assumes Cloudflare has already been cleared
+    # on this browser context (see main()).
+    
     url = f"https://twitchtracker.com/games/{game_id}"
     print(f"  Loading {url}")
 
@@ -111,10 +110,9 @@ def scrape_game(page, game_id: str) -> pd.DataFrame:
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Coerces the scraped string values into proper datetime and numeric
-    types, and sorts oldest to newest.
-    """
+    # Coerces the scraped string values into proper datetime and numeric
+    # types, and sorts oldest to newest.
+    
     # The month column comes in as ISO strings like "2026-04-01" thanks to
     # data-order. Anything that fails to parse (should not happen, but
     # defensive) becomes NaT.

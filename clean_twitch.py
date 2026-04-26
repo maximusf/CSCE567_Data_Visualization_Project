@@ -45,14 +45,13 @@ OUT_COLUMNS = [
 
 
 def parse_suffixed_number(val):
-    """
-    Converts a value like '1.51M', '45.9K', '308', '2,625' to a float.
-    Returns NaN for missing values ('-', empty, or already NaN).
+    # Converts a value like '1.51M', '45.9K', '308', '2,625' to a float.
+    # Returns NaN for missing values ('-', empty, or already NaN).
 
-    The Hours Watched column on TwitchTracker uses K (thousands) and M
-    (millions) suffixes for readability. We need raw integers to do any
-    real analysis.
-    """
+    # The Hours Watched column on TwitchTracker uses K (thousands) and M
+    # (millions) suffixes for readability. We need raw integers to do any
+    # real analysis.
+
     # pandas will pass through actual NaN floats; check with pd.isna.
     if pd.isna(val):
         return pd.NA
@@ -82,15 +81,14 @@ def parse_suffixed_number(val):
 
 
 def parse_pct(val):
-    """
-    Normalizes the % Gain column into a single consistent representation:
-    a percentage as a float (e.g. 13.2 means 13.2%, not 0.132).
+    # Normalizes the % Gain column into a single consistent representation:
+    # a percentage as a float (e.g. 13.2 means 13.2%, not 0.132).
 
-    Excel inconsistently converted these on paste. Some cells kept the
-    percent sign as a string ("-17.70%"), others were silently converted
-    to decimals (0.132). We need to detect which form a value is in and
-    normalize both to the same scale.
-    """
+    # Excel inconsistently converted these on paste. Some cells kept the
+    # percent sign as a string ("-17.70%"), others were silently converted
+    # to decimals (0.132). We need to detect which form a value is in and
+    # normalize both to the same scale.
+    
     if pd.isna(val):
         return pd.NA
 
@@ -132,13 +130,12 @@ def parse_pct(val):
 
 
 def parse_count(val):
-    """
-    Parses a count column (Avg Viewers, Peak Viewers, Avg Streams,
-    Peak Streams, and the two Gain columns) into an integer.
+    # Parses a count column (Avg Viewers, Peak Viewers, Avg Streams,
+    # Peak Streams, and the two Gain columns) into an integer.
 
-    Handles thousands separators that survive as strings ("2,625") and
-    the dash placeholder for missing values.
-    """
+    # Handles thousands separators that survive as strings ("2,625") and
+    # the dash placeholder for missing values.
+    
     if pd.isna(val):
         return pd.NA
 
@@ -157,9 +154,8 @@ def parse_count(val):
 
 
 def clean_one(game: str) -> pd.DataFrame:
-    """
-    Loads, cleans, and returns the DataFrame for a single game.
-    """
+    # Loads, cleans, and returns the DataFrame for a single game.
+    
     in_path = IN_DIR / f"twitch_{game}.csv"
 
     # We pass header=0 and immediately overwrite the column names because
