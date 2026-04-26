@@ -1,31 +1,21 @@
 # run_pipeline.py
 # by Maximus Fernandez
-
-# Runs the full raw-to-master data pipeline end to end:
-
-#   1. clean_twitch.py    cleans manually-collected TwitchTracker CSVs
-#   2. clean_steam.py     cleans the SteamDB monthly CSV exports
-#   3. clean_google.py    cleans the Google Trends CSV exports
-#   4. merge_data.py      joins the three cleaned sources into master.csv
-#                         and computes lag_summary.csv + growth_summary.csv
-
-# Each underlying script is self-contained and can be run on its own.
-# This orchestrator exists so the entire pipeline can be regenerated
-# with a single command. Each step runs as a subprocess so each
-# script's main() side effects (file I/O, console output) stay
-# isolated and global state cannot leak between steps.
-
-# Order matters here, unlike in the cleaners-only version: merge_data
-# reads the cleaned CSVs, so it must run after all three cleaners
-# finish. We run them in sequence rather than in parallel for that
-# reason and because the console output is easier to follow when
-# each step prints in order.
+#
+# Runs the full raw-to-master pipeline:
+#   1. clean_twitch.py    cleans TwitchTracker CSVs
+#   2. clean_steam.py     cleans SteamDB CSVs
+#   3. clean_google.py    cleans Google Trends CSVs
+#   4. merge_data.py      joins cleaned sources, writes master.csv,
+#                         lag_summary.csv, growth_summary.csv
+#
+# Cleaners are independent. merge_data must run after them since it
+# reads their outputs. Steps run sequentially as subprocesses to keep
+# console output ordered and avoid global state leaking between scripts.
 
 import subprocess
 import sys
 from pathlib import Path
 
-# Order matters: cleaners first (independent of each other), then merge.
 SCRIPTS = [
     "clean_twitch.py",
     "clean_steam.py",
@@ -35,33 +25,21 @@ SCRIPTS = [
 
 
 def run_script(script: str) -> bool:
-    # Runs a single script as a subprocess and streams its output to the
-    # console. Returns True if the script exited with code 0, False
-    # otherwise.
-
-    # We use sys.executable rather than a hardcoded "python" so whichever
-    # Python interpreter is running this orchestrator (whether "python",
-    # "python3", or a virtualenv binary) is reused for the child process.
-    # Avoids the common pitfall of the orchestrator succeeding under one
-    # interpreter while a child fails under a different one with missing
-    # dependencies.
-    
+    # Uses sys.executable so the child uses the same interpreter as
+    # the orchestrator (avoids "python" vs "python3" vs venv mismatch).
     print(f"\n{'=' * 60}")
     print(f"Running {script}")
     print(f"{'=' * 60}")
 
-    # check=False so we can report each failure explicitly. With
-    # check=True, a failed cleaner would crash the orchestrator before
-    # we got the chance to skip the merge step (which would have failed
-    # anyway because its inputs would be missing or stale).
+    # check=False so each failure is reported explicitly and the merge
+    # step can be skipped cleanly when a cleaner fails.
     result = subprocess.run([sys.executable, script], check=False)
     return result.returncode == 0
 
 
 def main():
-    # Verify every script exists in the current directory before
-    # running anything, so the user gets a clear error up front rather
-    # than a confusing "File not found" partway through.
+    # Verify every script exists up front so the user gets a clear
+    # error rather than a confusing failure partway through.
     missing = [s for s in SCRIPTS if not Path(s).exists()]
     if missing:
         print("ERROR: Missing script(s) in current directory:")
@@ -71,13 +49,14 @@ def main():
               "that all four scripts are present.")
         sys.exit(1)
 
-    # Run each script in sequence. If a cleaner fails, skip the merge
-    # step, since merge_data would either crash or silently produce a
-    # stale master.csv. The cleaners are independent of each other so
-    # we keep going even if one fails, to surface as many issues as
-    # possible in a single run.
+    # Skip merge if any cleaner failed. Cleaners themselves are
+    # independent so we keep going to surface as many failures as
+    # possible in one run.
     failed = []
     for script in SCRIPTS:
+        # Special case: merge_data depends on cleaner outputs, so
+        # skip it if any cleaner failed. Mark it as failed too so the
+        # final summary reflects that the pipeline did not complete.
         if script == "merge_data.py" and failed:
             print(f"\n{'=' * 60}")
             print("Skipping merge_data.py because one or more cleaners failed.")
@@ -87,8 +66,6 @@ def main():
         if not run_script(script):
             failed.append(script)
 
-    # Final summary so the result of the full pipeline is visible at
-    # the bottom of the terminal even after lots of intermediate output.
     print(f"\n{'=' * 60}")
     print("Pipeline summary")
     print(f"{'=' * 60}")
