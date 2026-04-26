@@ -19,6 +19,8 @@ import pandas as pd
 import time
 from pathlib import Path
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
 # Game IDs from the TwitchTracker URL path.
 GAMES = {
     "among_us": "510218",
@@ -27,7 +29,7 @@ GAMES = {
     "lethal_company": "2085980140",
 }
 
-OUT_DIR = Path("data/raw")
+OUT_DIR = ROOT_DIR / "data/raw"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Order matches the <td> cells per row.
@@ -101,7 +103,7 @@ def main():
         # blocks headless Chromium and a visible window also lets the
         # user solve any interactive challenge by hand.
         ctx = p.chromium.launch_persistent_context(
-            user_data_dir=".pw_profile",
+            user_data_dir=str(ROOT_DIR / ".pw_profile"),
             headless=False,
             viewport={"width": 1400, "height": 900},
         )

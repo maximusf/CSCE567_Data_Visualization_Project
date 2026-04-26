@@ -16,8 +16,9 @@ import pandas as pd
 import re
 from pathlib import Path
 
-IN_DIR = Path("data/raw")
-OUT_DIR = Path("data/clean")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+IN_DIR = ROOT_DIR / "data/raw"
+OUT_DIR = ROOT_DIR / "data/clean"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 GAMES = ["among_us", "fall_guys", "vampire_survivors", "lethal_company"]

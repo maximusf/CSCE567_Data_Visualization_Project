@@ -2,11 +2,11 @@
 # by Maximus Fernandez
 #
 # Runs the full raw-to-master pipeline:
-#   1. clean_twitch.py    cleans TwitchTracker CSVs
-#   2. clean_steam.py     cleans SteamDB CSVs
-#   3. clean_google.py    cleans Google Trends CSVs
-#   4. merge_data.py      joins cleaned sources, writes master.csv,
-#                         lag_summary.csv, growth_summary.csv
+#   1. tools/clean_twitch.py    cleans TwitchTracker CSVs
+#   2. tools/clean_steam.py     cleans SteamDB CSVs
+#   3. tools/clean_google.py    cleans Google Trends CSVs
+#   4. tools/merge_data.py      joins cleaned sources, writes master.csv,
+#                               lag_summary.csv, growth_summary.csv
 #
 # Cleaners are independent. merge_data must run after them since it
 # reads their outputs. Steps run sequentially as subprocesses to keep
@@ -17,19 +17,19 @@ import sys
 from pathlib import Path
 
 SCRIPTS = [
-    "clean_twitch.py",
-    "clean_steam.py",
-    "clean_google.py",
-    "merge_data.py",
+    "tools/clean_twitch.py",
+    "tools/clean_steam.py",
+    "tools/clean_google.py",
+    "tools/merge_data.py",
 ]
 
 
 def run_script(script: str) -> bool:
     # Uses sys.executable so the child uses the same interpreter as
     # the orchestrator (avoids "python" vs "python3" vs venv mismatch).
-    print(f"\n{'=' * 60}")
-    print(f"Running {script}")
-    print(f"{'=' * 60}")
+    print(f"\n{'=' * 60}", flush=True)
+    print(f"Running {script}", flush=True)
+    print(f"{'=' * 60}", flush=True)
 
     # check=False so each failure is reported explicitly and the merge
     # step can be skipped cleanly when a cleaner fails.
@@ -57,18 +57,18 @@ def main():
         # Special case: merge_data depends on cleaner outputs, so
         # skip it if any cleaner failed. Mark it as failed too so the
         # final summary reflects that the pipeline did not complete.
-        if script == "merge_data.py" and failed:
-            print(f"\n{'=' * 60}")
-            print("Skipping merge_data.py because one or more cleaners failed.")
-            print(f"{'=' * 60}")
+        if script == "tools/merge_data.py" and failed:
+            print(f"\n{'=' * 60}", flush=True)
+            print("Skipping tools/merge_data.py because one or more cleaners failed.", flush=True)
+            print(f"{'=' * 60}", flush=True)
             failed.append(script)
             continue
         if not run_script(script):
             failed.append(script)
 
-    print(f"\n{'=' * 60}")
-    print("Pipeline summary")
-    print(f"{'=' * 60}")
+    print(f"\n{'=' * 60}", flush=True)
+    print("Pipeline summary", flush=True)
+    print(f"{'=' * 60}", flush=True)
     if failed:
         print(f"FAILED: {len(failed)} script(s) did not complete successfully:")
         for s in failed:

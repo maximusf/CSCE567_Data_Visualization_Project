@@ -15,17 +15,19 @@ Raw files live in `data/raw/`. Cleaned files land in `data/clean/`.
 
 ## Project structure
 
-```
+```text
 .
-├── data/
-│   ├── raw/            # source CSVs (manual + downloads)
-│   └── clean/          # cleaned + merged outputs
-├── web/                # D3.js single-page site
-├── clean_twitch.py     # cleans TwitchTracker CSVs
-├── clean_steam.py      # cleans SteamDB CSVs
-├── clean_google.py     # cleans Google Trends CSVs
-├── merge_data.py       # joins sources, computes lag + growth summaries
-└── run_pipeline.py     # runs all four scripts in order
+|-- data/
+|   |-- raw/              # source CSVs (manual + downloads)
+|   `-- clean/            # cleaned + merged outputs
+|-- tools/                # data collection + cleaning helpers
+|   |-- clean_twitch.py   # cleans TwitchTracker CSVs
+|   |-- clean_steam.py    # cleans SteamDB CSVs
+|   |-- clean_google.py   # cleans Google Trends CSVs
+|   |-- merge_data.py     # joins sources, computes lag + growth summaries
+|   `-- scrape_twitch.py  # archived scraping attempt / reference
+|-- web/                  # D3.js single-page site
+`-- run_pipeline.py       # runs the pipeline from the project root
 ```
 
 ## Running the pipeline

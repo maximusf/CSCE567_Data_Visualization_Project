@@ -15,7 +15,8 @@
 import pandas as pd
 from pathlib import Path
 
-CLEAN_DIR = Path("data/clean")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+CLEAN_DIR = ROOT_DIR / "data/clean"
 
 GAMES = ["among_us", "fall_guys", "vampire_survivors", "lethal_company"]
 
